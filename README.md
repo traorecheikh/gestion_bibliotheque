@@ -28,5 +28,3 @@ Ce projet de bibliothèque en Python permet de gérer les livres, les emprunts, 
 Ce projet est sous licence APACHE. Voir le fichier `LICENSE` pour plus de détails.
 
 ---
-
-Vous pouvez personnaliser ce README en fonction des spécificités de votre projet et des informations que vous souhaitez partager.
