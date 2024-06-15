@@ -3,11 +3,11 @@
 {% block title %}Mes Emprunts - Bibliothèque{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h1 class="mt-4">Mes Emprunts</h1>
-        <table class="table">
-            <thead>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Mes Emprunts</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover custom-table">
+            <thead class="thead-dark">
                 <tr>
                     <th scope="col">Livre</th>
                     <th scope="col">Date d'emprunt</th>
@@ -22,26 +22,29 @@
                     <td>{{ emprunt.livre.titre }}</td>
                     <td>{{ emprunt.date_emprunt.strftime('%d-%m-%Y') }}</td>
                     <td>{% if emprunt.date_retour %}{{ emprunt.date_retour.strftime('%d-%m-%Y') }}{% else %}En cours{% endif %}</td>
-                    <td class="{% if emprunt.date_retour %}bg-success{% else %}bg-warning{% endif %}">
-                        {% if emprunt.date_retour %}
-                            Rendu
-                        {% else %}
-                            En cours
-                        {% endif %}
+                    <td>
+                        <span class="badge {% if emprunt.date_retour %}badge-success{% else %}badge-warning{% endif %}">
+                            {% if emprunt.date_retour %}
+                                Rendu
+                            {% else %}
+                                En cours
+                            {% endif %}
+                        </span>
                     </td>
-                    
-                    
                     <td>
                         {% if not emprunt.date_retour %}
-                        <a href="{{url_for('retour_emprunt',id=emprunt.id)}}" class="btn btn-primary">Retourner le livre</a>
+                        <a href="{{ url_for('retour_emprunt', id=emprunt.id) }}" class="badge badge-primary action-link">Retourner le livre</a>
                         {% else %}
-                        <button class="btn btn-secondary" disabled>Retourné</button>
+                        <span class="badge badge-success">pas d'action</span>
                         {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <div class="text-center">
+            <a href="{{ url_for('accueil') }}" class="btn btn-primary btn-lg mt-2">Retour à l'accueil</a>
+        </div>
     </div>
 </div>
 {% endblock %}

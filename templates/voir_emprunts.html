@@ -1,0 +1,39 @@
+{% extends 'layout_admin.html' %}
+
+{% block title %}Historique des Emprunts de {{ utilisateur.nom_utilisateur }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Historique des Emprunts de {{ utilisateur.nom_utilisateur }}</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Date d'emprunt</th>
+                    <th scope="col">Date de retour</th>
+                    <th scope="col">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emprunt in emprunts %}
+                <tr>
+                    <th scope="row">{{ emprunt.id }}</th>
+                    <td>{{ emprunt.date_emprunt.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ emprunt.date_retour.strftime('%d/%m/%Y') if emprunt.date_retour else 'Non retourné' }}</td>
+                    <td>
+                        <span class="badge {% if emprunt.date_retour is none %}badge-warning{% else %}badge-success{% endif %}">
+                            {{ 'En cours' if emprunt.date_retour is none else 'Terminé' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        <a href="{{url_for('gererUtilisateurs')}}" class="btn btn-primary btn-lg mt-4">Retour</a>
+    </div>
+</div>
+
+{% endblock %}

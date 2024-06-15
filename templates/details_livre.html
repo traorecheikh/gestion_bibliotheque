@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block title %}Détails du Livre - {{ livre.titre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{ livre.image_url }}" class="img-fluid" alt="Image de {{ livre.titre }}">
+        </div>
+        <div class="col-md-8">
+            <h1>{{ livre.titre }}</h1>
+            <p class="lead"><strong>Auteur:</strong> {{ livre.auteur }}</p>
+            <p><strong>Genre:</strong> {{ livre.genre }}</p>
+            <p><strong>Année de publication:</strong> {{ livre.annee_publication }}</p>
+            <p><strong>Quantité disponible:</strong> {{ livre.quantite }}</p>
+            <p><strong>Description:</strong> {{ livre.description }}</p>
+            <a href="{{ url_for('emprunter', id=livre.id) }}" class="btn btn-primary">Emprunter</a>
+            <a href="{{ url_for('bibliotheque') }}" class="btn btn-secondary">Retour à la bibliothèque</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

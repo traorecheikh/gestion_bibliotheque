@@ -7,7 +7,6 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from datetime import timedelta
 from functools import wraps
-
 import os
 '''mot de passe admin = @admin et username = admin'''
 app = Flask(__name__)
@@ -25,6 +24,7 @@ class Utilisateur(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nom_utilisateur = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    adresse = db.Column(db.String(120), nullable=False)
     mot_de_passe = db.Column(db.String(60), nullable=False)
     is_SuperUser = db.Column(db.Boolean, default=False)
 
@@ -168,6 +168,7 @@ def inscription():
     if request.method == 'POST':
         nom_utilisateur = request.form['nom_utilisateur']
         email = request.form['email']
+        adresse = request.form['adresse']
         mot_de_passe = request.form['mot_de_passe']
         try:
             utilisateur_existant = Utilisateur.query.filter_by(nom_utilisateur=nom_utilisateur).first()
@@ -177,7 +178,7 @@ def inscription():
         if utilisateur_existant:
             flash('Nom d\'utilisateur déjà utilisé. Veuillez en choisir un autre.', 'error')
         else:
-            nouveau_utilisateur = Utilisateur(nom_utilisateur=nom_utilisateur, email=email, mot_de_passe=generate_password_hash(mot_de_passe))
+            nouveau_utilisateur = Utilisateur(nom_utilisateur=nom_utilisateur, email=email, adresse=adresse, mot_de_passe=generate_password_hash(mot_de_passe))
             db.session.add(nouveau_utilisateur)
             db.session.commit()
             flash('Compte créé avec succès. Vous pouvez maintenant vous connecter.', 'success')
@@ -201,7 +202,7 @@ print(app.config['SQLALCHEMY_DATABASE_URI'])
 def accueil():
     '''
     je voulais ajouter ladmin directe dans la base a la premiere instanciation de la page accueil.
-    admin_user = Utilisateur(nom_utilisateur="admin", email="admin@example.com", mot_de_passe=generate_password_hash("@admin"), is_SuperUser=True)
+    admin_user = Utilisateur(nom_utilisateur="admin", email="admin@example.com",adresse="@admin", mot_de_passe=generate_password_hash("@admin"), is_SuperUser=True)
     db.session.add(admin_user)
     db.session.commit()'''
     return render_template('accueil.html')
@@ -214,12 +215,20 @@ def accueil_admin():
         return render_template('accueil_admin.html')
 
 
-@app.route('/livres')
+@app.route('/bibliotheque')
 @login_required
 @role_required(is_SuperUser_required=False)
-def livres():
-    livres = Livre.query.all()
-    return render_template('livre.html', livres=livres)
+def bibliotheque():
+    search = request.args.get('search')
+    if search:
+        livres = Livre.query.filter(
+            (Livre.titre.ilike(f'%{search}%')) |
+            (Livre.auteur.ilike(f'%{search}%'))|
+            (Livre.genre.ilike(f'%{search}%'))
+        ).all()
+    else:
+        livres = Livre.query.all()
+    return render_template('bibliotheque.html', livres=livres)
 
 
 @app.route('/ajout_livre', methods=['GET', 'POST'])
@@ -267,6 +276,18 @@ def ajout_livre():
     return render_template('ajouterlivre.html')
 
 
+@app.route('/details_livre/<int:id>')
+@login_required
+@role_required(is_SuperUser_required=False)
+def details_livre(id):
+    livre = Livre.query.get(id)
+    if not livre:
+        flash('Livre introuvable.', 'error')
+        return redirect(url_for('bibliotheque'))
+
+    return render_template('details_livre.html', livre=livre)
+
+
 @app.route('/gerer_livres')
 @login_required
 @role_required(is_SuperUser_required=True)
@@ -278,7 +299,8 @@ def gerer_livres():
     if search:
         livres = Livre.query.filter(
             (Livre.titre.ilike(f'%{search}%')) |
-            (Livre.auteur.ilike(f'%{search}%'))
+            (Livre.auteur.ilike(f'%{search}%'))|
+            (Livre.genre.ilike(f'%{search}%'))
         ).all()
     else:
         livres = Livre.query.all()
@@ -343,17 +365,17 @@ def emprunter(id):
         db.session.commit()
 
         flash('Emprunt effectué avec succès.', 'success')
-        return redirect(url_for('mes_emprunt'))
+        return redirect(url_for('mes_emprunts'))
 
     return render_template('emprunts.html', livre=livre, date_emprunt=date_emprunt.strftime('%d-%m-%Y'))
 
 
-@app.route('/mes_emprunt')
+@app.route('/mes_emprunts')
 @login_required
 @role_required(is_SuperUser_required=False)
-def mes_emprunt():
+def mes_emprunts():
     emprunts = Emprunt.query.filter_by(utilisateur_id=current_user.id).all()
-    return render_template('mes_emprunt.html', emprunts=emprunts)
+    return render_template('mes_emprunts.html', emprunts=emprunts)
 
 
 @app.route('/retour_emprunt/<int:id>')
@@ -369,8 +391,17 @@ def retour_emprunt(id):
         flash('Livre retourné avec succès.', 'success')
     else:
         flash('Emprunt introuvable.', 'error')
-    return redirect(url_for('mes_emprunt'))
+    return redirect(url_for('mes_emprunts'))
     
+    
+@app.route('/voir_emprunts/<int:id>')
+@login_required
+@role_required(is_SuperUser_required=True)
+def voir_emprunts(id):
+    utilisateur = Utilisateur.query.get(id)
+    emprunts = Emprunt.query.filter_by(utilisateur_id=id).all()
+    return render_template('voir_emprunts.html', utilisateur=utilisateur, emprunts=emprunts)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

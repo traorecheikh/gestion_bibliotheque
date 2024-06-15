@@ -125,6 +125,7 @@
   --bs-form-invalid-border-color: #dc3545;
 }
 
+
 [data-bs-theme=dark] {
   color-scheme: dark;
   --bs-body-color: #dee2e6;

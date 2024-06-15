@@ -7,7 +7,7 @@
     <h1 class="mt-4">Gérer les Livres</h1>
     <form method="get" action="{{ url_for('gerer_livres') }}">
         <div class="input-group mb-4">
-            <input type="text" name="search" class="form-control" placeholder="Rechercher par auteur ou titre" value="{{ request.args.get('search', '') }}">
+            <input type="text" name="search" class="form-control" placeholder="Rechercher par auteur, titre et genre" value="{{ request.args.get('search', '') }}">
             <div class="input-group-append">
                 <button class="btn btn-primary" type="submit">Rechercher</button>
             </div>
@@ -16,7 +16,7 @@
     <div class="row">
         {% for livre in livres %}
         <div class="col-md-3">
-            <div class="card mb-4 h-100">
+            <div class="card mb-4 h-100 book-card">
                 <img src="{{ livre.image_url }}" class="card-img-top book-image" alt="Image de {{ livre.titre }}">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ livre.titre }}</h5>
@@ -26,9 +26,9 @@
                         <strong>Année de publication:</strong> {{ livre.annee_publication }}<br>
                         <strong>Quantité:</strong> {{ livre.quantite }}
                     </p>
-                    <div class="btn-group mt-auto">
+                    <div class="mt-auto">
                         <a href="{{ url_for('modifier_livre', id=livre.id) }}" class="btn btn-warning">Modifier</a>
-                        <form method="post" action="{{ url_for('supprimer_livre', id=livre.id) }}">
+                        <form method="post" action="{{ url_for('supprimer_livre', id=livre.id) }}" class="d-inline">
                             <button type="submit" class="btn btn-danger">Supprimer</button>
                         </form>
                     </div>

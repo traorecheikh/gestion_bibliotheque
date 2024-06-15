@@ -15,19 +15,24 @@
             </tr>
         </thead>
         <tbody>
-            {% for utilisateur in utilisateurs %}
+            {% for utilisateur in utilisateurs if not utilisateur.is_SuperUser %}
             <tr>
                 <th scope="row">{{ utilisateur.id }}</th>
                 <td>{{ utilisateur.nom_utilisateur }}</td>
                 <td>{{ utilisateur.email }}</td>
+                <td>{{ utilisateur.adresse }}</td>
                 <td>
                     <form method="post" action="{{ url_for('supprimerUtilisateur', id=utilisateur.id) }}">
                         <button type="submit" class="btn btn-danger">Supprimer</button>
                     </form>
+                    <a href="{{ url_for('voir_emprunts', id=utilisateur.id) }}" class="btn btn-primary">Voir historique emprunts</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="text-center">
+        <a href="{{url_for('accueil_admin')}}" class="btn btn-primary btn-lg mt-4">Retour</a>
+    </div>
 </div>
 {% endblock %}
