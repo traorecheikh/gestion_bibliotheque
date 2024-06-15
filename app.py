@@ -91,7 +91,7 @@ def index():
 def gererUtilisateurs():
     if current_user.is_SuperUser:
         utilisateurs = Utilisateur.query.all()
-        return render_template('Utilisateur.html', utilisateurs=utilisateurs)
+        return render_template('gerer_utilisateur.html', utilisateurs=utilisateurs)
     else:
         return redirect(url_for('accueil'))
     
