@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-size: cover;">
+    <div class="card" style="width: 100%; max-width: 400px; padding: 20px; margin: 20px;">
+        <div class="card-body">
+            <h1 class="card-title text-center">Inscription</h1>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            
+            <form method="post">
+                <div class="form-group">
+                    <label for="nom_utilisateur">Nom d'utilisateur:</label>
+                    <input type="text" id="nom_utilisateur" name="nom_utilisateur" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="mot_de_passe">Mot de passe:</label>
+                    <input type="password" id="mot_de_passe" name="mot_de_passe" class="form-control" required>
+                </div>
+                <div class="form-group text-center mt-4">
+                    <button type="submit" class="btn btn-primary">S'inscrire</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

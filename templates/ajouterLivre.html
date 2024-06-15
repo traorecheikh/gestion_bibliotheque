@@ -1,0 +1,46 @@
+{% extends 'layout_admin.html' %}
+
+{% block title %}Ajouter un Livre{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-size: cover;">
+<div class="card" style="width: 100%; max-width: 400px; padding: 20px;">
+<div class="container mt-4">
+
+    <h1>Ajouter un Livre</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="titre">Titre</label>
+            <input type="text" class="form-control" id="titre" name="titre" required>
+        </div>
+        <div class="form-group">
+            <label for="auteur">Auteur</label>
+            <input type="text" class="form-control" id="auteur" name="auteur" required>
+        </div>
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" class="form-control" id="genre" name="genre" required>
+        </div>
+        <div class="form-group">
+            <label for="annee_publication">Année de publication</label>
+            <input type="number" class="form-control" id="annee_publication" name="annee_publication" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="quantite">Quantité</label>
+            <input type="number" class="form-control" id="quantite" name="quantite" required>
+        </div>
+        <div class="form-group">
+            <label for="image">Image</label>
+            <input type="file" class="form-control-file" id="image" name="image">
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter le livre</button>
+    </form>    
+    </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}Livres - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Livres Disponibles</h1>
+    <form method="get" action="{{ url_for('livres') }}">
+        <div class="input-group mb-4">
+            <input type="text" name="search" class="form-control" placeholder="Rechercher par auteur ou titre" value="{{ request.args.get('search', '') }}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Rechercher</button>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        {% for livre in livres if livre.quantite>0 %}
+        <div class="col-md-3">
+            <div class="card mb-4 h-100">
+                <img src="{{ livre.image_url }}" class="card-img-top book-image" alt="Image de {{ livre.titre }}"
+                    data-toggle="modal" data-target="#imageModal{{ livre.id }}">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ livre.titre }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Auteur: {{ livre.auteur }}</h6>
+                    <p class="card-text flex-grow-1">
+                        <strong>Genre:</strong> {{ livre.genre }}<br>
+                        <strong>Année de publication:</strong> {{ livre.annee_publication }}<br>
+                        <strong>Quantité:</strong> {{ livre.quantite }}
+                    </p>
+                    <a href="{{ url_for('emprunter', id=livre.id) }}" class="btn btn-primary">EMPRUNTER</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

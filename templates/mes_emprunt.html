@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block title %}Mes Emprunts - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mt-4">Mes Emprunts</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Livre</th>
+                    <th scope="col">Date d'emprunt</th>
+                    <th scope="col">Date de retour</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emprunt in emprunts %}
+                <tr>
+                    <td>{{ emprunt.livre.titre }}</td>
+                    <td>{{ emprunt.date_emprunt.strftime('%d-%m-%Y') }}</td>
+                    <td>{% if emprunt.date_retour %}{{ emprunt.date_retour.strftime('%d-%m-%Y') }}{% else %}En cours{% endif %}</td>
+                    <td class="{% if emprunt.date_retour %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if emprunt.date_retour %}
+                            Rendu
+                        {% else %}
+                            En cours
+                        {% endif %}
+                    </td>
+                    
+                    
+                    <td>
+                        {% if not emprunt.date_retour %}
+                        <a href="{{url_for('retour_emprunt',id=emprunt.id)}}" class="btn btn-primary">Retourner le livre</a>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>Retourné</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

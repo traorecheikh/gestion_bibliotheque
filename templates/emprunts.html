@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block title %}Emprunter Livre{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-size: cover;">
+    <div class="card" style="width: 100%; max-width: 400px; padding: 10px;">
+        <div class="container mt">
+            <h1 class="mt">EMPRUNTER LE LIVRE</h1>
+            <form method="post" action="{{ url_for('emprunter', id=livre.id) }}">
+                <div class="form-group">
+                    <label for="titre">Titre:</label>
+                    <input type="text" id="titre" name="titre" class="form-control" value="{{ livre.titre }}" required disabled>
+                </div>
+                <div class="form-group">
+                    <label for="auteur">Auteur:</label>
+                    <input type="text" id="auteur" name="auteur" class="form-control" value="{{ livre.auteur }}" required disabled>
+                </div>
+                <div class="form-group">
+                    <label for="quantite">Quantité:</label>
+                    <input type="text" id="quantite" name="quantite" class="form-control" value="{{ livre.quantite }}" required disabled>
+                </div>
+                <div class="form-group">
+                    <label for="date_E">Date d'emprunt:</label>
+                    <input type="text" id="date_E" name="date_E" class="form-control" value="{{ date_emprunt }}" required disabled>
+                </div>
+                <div class="form-group">
+                    <label for="duree">Durée:</label>
+                    <input type="text" id="duree" name="duree" class="form-control" value="15" required disabled>
+                </div>
+                <button type="submit" class="btn btn-primary">Emprunter</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block title %}Accueil - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        Tableau de bord <span class="sr-only">({{ current_user.nom_utilisateur }})</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('livres')}}">
+                        Livres
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Emprunts
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <h1 class="mt-4">Tableau de bord</h1>
+        <p>Bienvenue sur votre tableau de bord, "{{ current_user.nom_utilisateur }}".</p>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Livres</h5>
+                        <p class="card-text">Voir les livres de la bibliothèque.</p>
+                        <a href="{{ url_for('livres') }}" class="btn btn-primary">Voir les livres</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Emprunts</h5>
+                        <p class="card-text">Gérez vos emprunts de livres.</p>
+                        <a href="{{url_for('mes_emprunt')}}" class="btn btn-primary">Voir mes emprunts</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
