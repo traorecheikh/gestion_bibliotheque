@@ -13,7 +13,6 @@
             <p class="lead"><strong>Auteur:</strong> {{ livre.auteur }}</p>
             <p><strong>Genre:</strong> {{ livre.genre }}</p>
             <p><strong>Année de publication:</strong> {{ livre.annee_publication }}</p>
-            <p><strong>Quantité disponible:</strong> {{ livre.quantite }}</p>
             <p><strong>Description:</strong> {{ livre.description }}</p>
             <a href="{{ url_for('emprunter', id=livre.id) }}" class="btn btn-primary">Emprunter</a>
             <a href="{{ url_for('bibliotheque') }}" class="btn btn-secondary">Retour à la bibliothèque</a>

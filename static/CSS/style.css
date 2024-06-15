@@ -193,3 +193,30 @@ h1 {
         transform: translateY(0);
     }
 }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.sidebar .nav-link {
+    font-size: 1.1rem;
+    padding: 10px 15px;
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px;
+}

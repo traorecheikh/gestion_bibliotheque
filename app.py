@@ -114,29 +114,6 @@ def supprimerUtilisateur(id):
     return redirect(url_for('gererUtilisateurs'))
 
 
-'''@app.route('/tfa', methods=['POST'])
-def tfa():
-    if 'cleMaster' not in request.form:
-        flash('Cle Master manquante.', 'error')
-        return redirect(url_for('connexion'))
-
-    cleMaster = request.form['cleMaster']
-    if not isinstance(cleMaster, str):
-        flash('Cle Master invalide.', 'error')
-        return redirect(url_for('connexion'))
-
-    if cleMaster != "SuperUSer":
-        flash('Cle Master invalide.', 'error')
-        return redirect(url_for('connexion'))
-
-    return redirect(url_for('accueil_admin'))
-
-        
-@app.route('/page2fa') 
-def page2fa():
-    return render_template('2fa.html')
-'''
-
 @app.route('/connexion', methods=['GET', 'POST'])
 def connexion():
     if current_user.is_authenticated:
