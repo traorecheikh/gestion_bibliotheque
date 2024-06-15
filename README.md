@@ -1,5 +1,3 @@
-Dans ce cas, voici un exemple de README adapté à notre conversation :
-
 ---
 
 # Projet de Bibliothèque en Python
