@@ -15,7 +15,6 @@ app.config['SECRET_KEY'] = os.environ.get('SQLALCHEMY_SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/IMAGE')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 login_manager = LoginManager(app)
 login_manager.login_view = 'connexion'
 
@@ -74,7 +73,6 @@ def role_required(is_SuperUser_required):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
-
 
 
 @app.route('/')
