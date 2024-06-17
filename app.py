@@ -5,7 +5,6 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from datetime import timedelta
 from functools import wraps
 import os
 '''mot de passe admin = @admin et username = admin'''
@@ -167,8 +166,6 @@ def deconnexion():
     logout_user()
     flash('Déconnecté avec succès.', 'success')
     return redirect(url_for('connexion'))
-
-print(app.config['SQLALCHEMY_DATABASE_URI'])
 
 
 @app.route('/accueil')
