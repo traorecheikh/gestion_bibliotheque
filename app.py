@@ -7,7 +7,8 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from functools import wraps
 import os
-'''mot de passe admin = @admin et username = admin'''
+
+
 app = Flask(__name__)
 app.config.from_object('config.Config')
 app.config['SECRET_KEY'] = os.environ.get('SQLALCHEMY_SECRET_KEY')
@@ -18,6 +19,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'connexion'
 
 
+'''mot de passe admin = @admin et username = admin'''
 class Utilisateur(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nom_utilisateur = db.Column(db.String(50), unique=True, nullable=False)
