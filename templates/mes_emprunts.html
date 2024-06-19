@@ -1,5 +1,6 @@
-{% extends 'layout.html' %} {% block title %}Mes Emprunts - Bibliothèque{%
-endblock %} {% block content %}
+{% extends 'layout.html' %} 
+{% block title %}Mes Emprunts - Bibliothèque{% endblock %} 
+{% block content %}
 <div class="container mt-4">
   <h1 class="text-center mb-4">Mes Emprunts</h1>
   <div class="table-responsive">
@@ -19,26 +20,32 @@ endblock %} {% block content %}
           <td>{{ emprunt.livre.titre }}</td>
           <td>{{ emprunt.date_emprunt.strftime('%d-%m-%Y') }}</td>
           <td>
-            {% if emprunt.date_retour %}{{
-            emprunt.date_retour.strftime('%d-%m-%Y') }}{% else %}En cours{%
-            endif %}
+            {% if emprunt.date_retour %}
+              {{ emprunt.date_retour.strftime('%d-%m-%Y') }}
+            {% else %}
+              En cours
+            {% endif %}
           </td>
           <td>
-            <span
-              class="badge {% if emprunt.date_retour %}badge-success{% else %}badge-warning{% endif %}"
-            >
-              {% if emprunt.date_retour %} Rendu {% else %} En cours {% endif %}
-            </span>
+            {% if emprunt.status == "en retard" %}
+              <span class="badge badge-danger">En retard</span>
+            {% elif emprunt.status == "en cours" %}
+              <span class="badge badge-warning">En cours</span>
+            {% elif emprunt.status == "en retard_rendu" %}
+              <span class="badge badge-danger-R">Rendu en retard</span>
+            {% else %}
+              <span class="badge badge-success">Rendu</span>
+            {% endif %}
           </td>
           <td>
             {% if not emprunt.date_retour %}
-            <a
-              href="{{ url_for('retour_emprunt', id=emprunt.id) }}"
-              class="badge badge-primary action-link"
-              >Retourner le livre</a
-            >
+              <a
+                href="{{ url_for('retour_emprunt', id=emprunt.id) }}"
+                class="badge badge-primary action-link"
+                >Retourner le livre</a
+              >
             {% else %}
-            <span class="badge badge-success">pas d'action</span>
+              <span class="badge badge-success">pas d'action</span>
             {% endif %}
           </td>
         </tr>

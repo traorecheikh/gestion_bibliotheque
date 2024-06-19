@@ -11,7 +11,7 @@ from flask_login import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 import os
 
@@ -274,7 +274,7 @@ def ajout_livre():
             flash("Livre ajouté avec succès!", "success")
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f"Error adding book: {e}")
+            app.logger.error(f"Erreur lors de l'ajout du livre: {e}")
             flash("Erreur lors de l'ajout du livre.", "danger")
 
         return redirect(url_for("gerer_livres"))
@@ -344,7 +344,6 @@ def modifier_livre(id):
         livre.image_url = request.form["image_url"]
 
         db.session.commit()
-        flash("Livre modifié avec succès.", "success")
         return redirect(url_for("gerer_livres"))
 
     return render_template("modifier_livre.html", livre=livre)
@@ -370,7 +369,6 @@ def emprunter(id):
         db.session.add(nouvel_emprunt)
         db.session.commit()
 
-        flash("Emprunt effectué avec succès.", "success")
         return redirect(url_for("mes_emprunts"))
 
     return render_template(
@@ -383,6 +381,17 @@ def emprunter(id):
 @role_required(is_SuperUser_required=False)
 def mes_emprunts():
     emprunts = Emprunt.query.filter_by(utilisateur_id=current_user.id).all()
+    for emprunt in emprunts:
+        if emprunt.date_retour is None:
+            if datetime.now() > emprunt.date_emprunt + timedelta(days=5):
+                emprunt.status = "en retard"
+            else:
+                emprunt.status = "en cours"
+        else:
+            if emprunt.date_retour > emprunt.date_emprunt + timedelta(days=15):
+                emprunt.status = "en retard_rendu"
+            else:
+                emprunt.status = "rendu"
     return render_template("mes_emprunts.html", emprunts=emprunts)
 
 

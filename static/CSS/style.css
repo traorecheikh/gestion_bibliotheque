@@ -118,6 +118,12 @@ h1 {
 .badge-success {
   background-color: #28a745;
 }
+.badge-danger-R {
+  background-color: #ff5107;
+}
+.badge-danger{
+  background-color: #ff0000;
+}
 
 h1 {
   font-weight: 700;
