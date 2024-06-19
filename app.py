@@ -202,7 +202,11 @@ def bibliotheque():
         ).all()
     else:
         livres = Livre.query.all()
-    return render_template('bibliotheque.html', livres=livres)
+
+    emprunts_ids = [emprunt.livre_id for emprunt in Emprunt.query.filter_by(utilisateur_id=current_user.id)]
+
+    return render_template('bibliotheque.html', livres=livres, emprunts_ids=emprunts_ids)
+
 
 
 @app.route('/ajout_livre', methods=['GET', 'POST'])
