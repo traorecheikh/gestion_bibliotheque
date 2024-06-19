@@ -1,7 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    login_required,
+    logout_user,
+    current_user,
+)
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -10,16 +17,15 @@ import os
 
 
 app = Flask(__name__)
-app.config.from_object('config.Config')
-app.config['SECRET_KEY'] = os.environ.get('SQLALCHEMY_SECRET_KEY')
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/IMAGE')
+app.config.from_object("config.Config")
+app.config["SECRET_KEY"] = os.environ.get("SQLALCHEMY_SECRET_KEY")
+app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static/IMAGE")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
-login_manager.login_view = 'connexion'
+login_manager.login_view = "connexion"
 
 
-'''mot de passe admin = @admin et username = admin'''
 class Utilisateur(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nom_utilisateur = db.Column(db.String(50), unique=True, nullable=False)
@@ -44,13 +50,15 @@ class Livre(db.Model):
     description = db.Column(db.Text, nullable=True)
     quantite = db.Column(db.Integer, default=1, nullable=False)
     image_url = db.Column(db.String(200), nullable=True)
-    emprunts = db.relationship('Emprunt', backref='livre', lazy=True)
+    emprunts = db.relationship("Emprunt", backref="livre", lazy=True)
 
 
 class Emprunt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=False)
-    livre_id = db.Column(db.Integer, db.ForeignKey('livre.id'), nullable=False)
+    utilisateur_id = db.Column(
+        db.Integer, db.ForeignKey("utilisateur.id"), nullable=False
+    )
+    livre_id = db.Column(db.Integer, db.ForeignKey("livre.id"), nullable=False)
     date_emprunt = db.Column(db.DateTime, nullable=False)
     duree_emprunt = db.Column(db.Integer, nullable=False)
     date_retour = db.Column(db.DateTime)
@@ -66,169 +74,189 @@ def role_required(is_SuperUser_required):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
-                return redirect(url_for('connexion'))
+                return redirect(url_for("connexion"))
             if is_SuperUser_required and not current_user.is_SuperUser:
-                return redirect(url_for('accueil'))
+                return redirect(url_for("accueil"))
             if not is_SuperUser_required and current_user.is_SuperUser:
-                return redirect(url_for('accueil_admin'))
+                return redirect(url_for("accueil_admin"))
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator
 
 
-@app.route('/')
+@app.route("/")
 def index():
     if current_user.is_authenticated:
-        return redirect(url_for('accueil'))
+        return redirect(url_for("accueil"))
     else:
-        return redirect(url_for('connexion'))
+        return redirect(url_for("connexion"))
 
 
-@app.route('/gererUtilisateurs')
+@app.route("/gererUtilisateurs")
 @login_required
 @role_required(is_SuperUser_required=True)
 def gererUtilisateurs():
     if current_user.is_SuperUser:
         utilisateurs = Utilisateur.query.all()
-        return render_template('gerer_utilisateur.html', utilisateurs=utilisateurs)
+        return render_template("gerer_utilisateur.html", utilisateurs=utilisateurs)
     else:
-        return redirect(url_for('accueil'))
-    
-    
-@app.route('/supprimerUtilisateur/<int:id>', methods=['POST'])
+        return redirect(url_for("accueil"))
+
+
+@app.route("/supprimerUtilisateur/<int:id>", methods=["POST"])
 @login_required
 @role_required(is_SuperUser_required=True)
 def supprimerUtilisateur(id):
     if not current_user.is_SuperUser:
-        return redirect(url_for('accueil'))
+        return redirect(url_for("accueil"))
 
     utilisateur = Utilisateur.query.get(id)
     if utilisateur:
         db.session.delete(utilisateur)
         db.session.commit()
-        flash('Utilisateur supprimé avec succès.', 'success')
+        flash("Utilisateur supprimé avec succès.", "success")
     else:
-        flash('Utilisateur introuvable.', 'error')
+        flash("Utilisateur introuvable.", "error")
 
-    return redirect(url_for('gererUtilisateurs'))
+    return redirect(url_for("gererUtilisateurs"))
 
 
-@app.route('/connexion', methods=['GET', 'POST'])
+@app.route("/connexion", methods=["GET", "POST"])
 def connexion():
     if current_user.is_authenticated:
-        return redirect(url_for('accueil'))
-    if request.method == 'POST':
-        nom_utilisateur = request.form['nom_utilisateur']
-        mot_de_passe = request.form['mot_de_passe']
-        utilisateur = Utilisateur.query.filter_by(nom_utilisateur=nom_utilisateur).first()
+        return redirect(url_for("accueil"))
+    if request.method == "POST":
+        nom_utilisateur = request.form["nom_utilisateur"]
+        mot_de_passe = request.form["mot_de_passe"]
+        utilisateur = Utilisateur.query.filter_by(
+            nom_utilisateur=nom_utilisateur
+        ).first()
         if utilisateur:
             if check_password_hash(utilisateur.mot_de_passe, mot_de_passe):
                 login_user(utilisateur)
-                flash('Connecté avec succès.', 'success')
+                flash("Connecté avec succès.", "success")
                 if utilisateur.is_SuperUser:
-                    return redirect(url_for('accueil_admin'))
+                    return redirect(url_for("accueil_admin"))
                 else:
-                    return redirect(url_for('accueil'))
+                    return redirect(url_for("accueil"))
             else:
-                flash('Mot de passe incorrect.', 'error')
+                flash("Mot de passe incorrect.", "error")
         else:
-            flash('Nom d\'utilisateur inconnu.', 'error')
-            return redirect(url_for('connexion'))
-    return render_template('connexion.html')
+            flash("Nom d'utilisateur inconnu.", "error")
+            return redirect(url_for("connexion"))
+    return render_template("connexion.html")
 
 
-@app.route('/inscription', methods=['GET', 'POST'])
+@app.route("/inscription", methods=["GET", "POST"])
 def inscription():
     if current_user.is_authenticated:
-        return redirect(url_for('accueil'))
-    if request.method == 'POST':
-        nom_utilisateur = request.form['nom_utilisateur']
-        email = request.form['email']
-        adresse = request.form['adresse']
-        mot_de_passe = request.form['mot_de_passe']
+        return redirect(url_for("accueil"))
+    if request.method == "POST":
+        nom_utilisateur = request.form["nom_utilisateur"]
+        email = request.form["email"]
+        adresse = request.form["adresse"]
+        mot_de_passe = request.form["mot_de_passe"]
         try:
-            utilisateur_existant = Utilisateur.query.filter_by(nom_utilisateur=nom_utilisateur).first()
+            utilisateur_existant = Utilisateur.query.filter_by(
+                nom_utilisateur=nom_utilisateur
+            ).first()
         except UnicodeError as e:
-            flash('Erreur lors de l\'inscription. Veuillez réessayer.', 'error')
-            return redirect(url_for('inscription'))
+            flash("Erreur lors de l'inscription. Veuillez réessayer.", "error")
+            return redirect(url_for("inscription"))
         if utilisateur_existant:
-            flash('Nom d\'utilisateur déjà utilisé. Veuillez en choisir un autre.', 'error')
+            flash(
+                "Nom d'utilisateur déjà utilisé. Veuillez en choisir un autre.", "error"
+            )
         else:
-            nouveau_utilisateur = Utilisateur(nom_utilisateur=nom_utilisateur, email=email, adresse=adresse, mot_de_passe=generate_password_hash(mot_de_passe))
+            nouveau_utilisateur = Utilisateur(
+                nom_utilisateur=nom_utilisateur,
+                email=email,
+                adresse=adresse,
+                mot_de_passe=generate_password_hash(mot_de_passe),
+            )
             db.session.add(nouveau_utilisateur)
             db.session.commit()
-            flash('Compte créé avec succès. Vous pouvez maintenant vous connecter.', 'success')
-            return redirect(url_for('connexion'))
-    return render_template('inscription.html')
+            flash(
+                "Compte créé avec succès. Vous pouvez maintenant vous connecter.",
+                "success",
+            )
+            return redirect(url_for("connexion"))
+    return render_template("inscription.html")
 
 
-@app.route('/deconnexion')
+@app.route("/deconnexion")
 @login_required
 def deconnexion():
     logout_user()
-    flash('Déconnecté avec succès.', 'success')
-    return redirect(url_for('connexion'))
+    flash("Déconnecté avec succès.", "success")
+    return redirect(url_for("connexion"))
 
 
-@app.route('/accueil')
+@app.route("/accueil")
 @login_required
 @role_required(is_SuperUser_required=False)
 def accueil():
-    '''
+    """
     je voulais ajouter ladmin directe dans la base a la premiere instanciation de la page accueil.
     admin_user = Utilisateur(nom_utilisateur="admin", email="admin@example.com",adresse="@admin", mot_de_passe=generate_password_hash("@admin"), is_SuperUser=True)
     db.session.add(admin_user)
-    db.session.commit()'''
-    return render_template('accueil.html')
+    db.session.commit()"""
+    return render_template("accueil.html")
 
 
-@app.route('/accueil_admin')
+@app.route("/accueil_admin")
 @login_required
 @role_required(is_SuperUser_required=True)
 def accueil_admin():
-        return render_template('accueil_admin.html')
+    return render_template("accueil_admin.html")
 
 
-@app.route('/bibliotheque')
+@app.route("/bibliotheque")
 @login_required
 @role_required(is_SuperUser_required=False)
 def bibliotheque():
-    search = request.args.get('search')
+    search = request.args.get("search")
     if search:
         livres = Livre.query.filter(
-            (Livre.titre.ilike(f'%{search}%')) |
-            (Livre.auteur.ilike(f'%{search}%'))|
-            (Livre.genre.ilike(f'%{search}%'))
+            (Livre.titre.ilike(f"%{search}%"))
+            | (Livre.auteur.ilike(f"%{search}%"))
+            | (Livre.genre.ilike(f"%{search}%"))
         ).all()
     else:
         livres = Livre.query.all()
 
-    emprunts_ids = [emprunt.livre_id for emprunt in Emprunt.query.filter_by(utilisateur_id=current_user.id)]
+    emprunts_ids = [
+        emprunt.livre_id
+        for emprunt in Emprunt.query.filter_by(utilisateur_id=current_user.id)
+    ]
 
-    return render_template('bibliotheque.html', livres=livres, emprunts_ids=emprunts_ids)
+    return render_template(
+        "bibliotheque.html", livres=livres, emprunts_ids=emprunts_ids
+    )
 
 
-
-@app.route('/ajout_livre', methods=['GET', 'POST'])
+@app.route("/ajout_livre", methods=["GET", "POST"])
 @login_required
 @role_required(is_SuperUser_required=True)
 def ajout_livre():
 
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
-            titre = request.form['titre']
-            auteur = request.form['auteur']
-            genre = request.form['genre']
-            annee_publication = request.form['annee_publication']
-            description = request.form['description']
-            quantite = request.form['quantite']
+            titre = request.form["titre"]
+            auteur = request.form["auteur"]
+            genre = request.form["genre"]
+            annee_publication = request.form["annee_publication"]
+            description = request.form["description"]
+            quantite = request.form["quantite"]
 
-            image = request.files['image']
+            image = request.files["image"]
             if image:
                 filename = secure_filename(image.filename)
-                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 image.save(image_path)
-                image_url = url_for('static', filename='IMAGE/' + filename)
+                image_url = url_for("static", filename="IMAGE/" + filename)
             else:
                 image_url = None
 
@@ -239,53 +267,53 @@ def ajout_livre():
                 annee_publication=int(annee_publication),
                 description=description,
                 quantite=int(quantite),
-                image_url=image_url
+                image_url=image_url,
             )
             db.session.add(new_livre)
             db.session.commit()
-            flash('Livre ajouté avec succès!', 'success')
+            flash("Livre ajouté avec succès!", "success")
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f'Error adding book: {e}')
-            flash('Erreur lors de l\'ajout du livre.', 'danger')
+            app.logger.error(f"Error adding book: {e}")
+            flash("Erreur lors de l'ajout du livre.", "danger")
 
-        return redirect(url_for('gerer_livres'))
+        return redirect(url_for("gerer_livres"))
 
-    return render_template('ajouterlivre.html')
+    return render_template("ajouterlivre.html")
 
 
-@app.route('/details_livre/<int:id>')
+@app.route("/details_livre/<int:id>")
 @login_required
 @role_required(is_SuperUser_required=False)
 def details_livre(id):
     livre = Livre.query.get(id)
     if not livre:
-        flash('Livre introuvable.', 'error')
-        return redirect(url_for('bibliotheque'))
+        flash("Livre introuvable.", "error")
+        return redirect(url_for("bibliotheque"))
 
-    return render_template('details_livre.html', livre=livre)
+    return render_template("details_livre.html", livre=livre)
 
 
-@app.route('/gerer_livres')
+@app.route("/gerer_livres")
 @login_required
 @role_required(is_SuperUser_required=True)
 def gerer_livres():
     if not current_user.is_SuperUser:
-        return redirect(url_for('accueil'))
+        return redirect(url_for("accueil"))
 
-    search = request.args.get('search')
+    search = request.args.get("search")
     if search:
         livres = Livre.query.filter(
-            (Livre.titre.ilike(f'%{search}%')) |
-            (Livre.auteur.ilike(f'%{search}%'))|
-            (Livre.genre.ilike(f'%{search}%'))
+            (Livre.titre.ilike(f"%{search}%"))
+            | (Livre.auteur.ilike(f"%{search}%"))
+            | (Livre.genre.ilike(f"%{search}%"))
         ).all()
     else:
         livres = Livre.query.all()
-    return render_template('gerer_livres.html', livres=livres)
+    return render_template("gerer_livres.html", livres=livres)
 
 
-@app.route('/supprimer_livre/<int:id>', methods=['POST'])
+@app.route("/supprimer_livre/<int:id>", methods=["POST"])
 @login_required
 @role_required(is_SuperUser_required=True)
 def supprimer_livre(id):
@@ -294,42 +322,42 @@ def supprimer_livre(id):
     if livre:
         db.session.delete(livre)
         db.session.commit()
-        flash('Livre supprimé avec succès.', 'success')
+        flash("Livre supprimé avec succès.", "success")
     else:
-        flash('Livre introuvable.', 'error')
+        flash("Livre introuvable.", "error")
 
-    return redirect(url_for('gerer_livres'))
+    return redirect(url_for("gerer_livres"))
 
 
-@app.route('/modifier_livre/<int:id>', methods=['GET', 'POST'])
+@app.route("/modifier_livre/<int:id>", methods=["GET", "POST"])
 @login_required
 @role_required(is_SuperUser_required=True)
 def modifier_livre(id):
 
     livre = Livre.query.get(id)
-    if request.method == 'POST':
-        livre.titre = request.form['titre']
-        livre.auteur = request.form['auteur']
-        livre.genre = request.form['genre']
-        livre.annee_publication = request.form['annee_publication']
-        livre.quantite = request.form['quantite']
-        livre.image_url = request.form['image_url']
+    if request.method == "POST":
+        livre.titre = request.form["titre"]
+        livre.auteur = request.form["auteur"]
+        livre.genre = request.form["genre"]
+        livre.annee_publication = request.form["annee_publication"]
+        livre.quantite = request.form["quantite"]
+        livre.image_url = request.form["image_url"]
 
         db.session.commit()
-        flash('Livre modifié avec succès.', 'success')
-        return redirect(url_for('gerer_livres'))
+        flash("Livre modifié avec succès.", "success")
+        return redirect(url_for("gerer_livres"))
 
-    return render_template('modifier_livre.html', livre=livre)
+    return render_template("modifier_livre.html", livre=livre)
 
 
-@app.route('/emprunter/<int:id>', methods=['GET', 'POST'])
+@app.route("/emprunter/<int:id>", methods=["GET", "POST"])
 @login_required
 @role_required(is_SuperUser_required=False)
 def emprunter(id):
     date_emprunt = datetime.now()
 
     livre = Livre.query.get(id)
-    if request.method == 'POST':
+    if request.method == "POST":
         livre.quantite -= 1
 
         nouvel_emprunt = Emprunt(
@@ -337,26 +365,28 @@ def emprunter(id):
             livre_id=livre.id,
             date_emprunt=date_emprunt,
             duree_emprunt=15,
-            date_retour=None
+            date_retour=None,
         )
         db.session.add(nouvel_emprunt)
         db.session.commit()
 
-        flash('Emprunt effectué avec succès.', 'success')
-        return redirect(url_for('mes_emprunts'))
+        flash("Emprunt effectué avec succès.", "success")
+        return redirect(url_for("mes_emprunts"))
 
-    return render_template('emprunts.html', livre=livre, date_emprunt=date_emprunt.strftime('%d-%m-%Y'))
+    return render_template(
+        "emprunts.html", livre=livre, date_emprunt=date_emprunt.strftime("%d-%m-%Y")
+    )
 
 
-@app.route('/mes_emprunts')
+@app.route("/mes_emprunts")
 @login_required
 @role_required(is_SuperUser_required=False)
 def mes_emprunts():
     emprunts = Emprunt.query.filter_by(utilisateur_id=current_user.id).all()
-    return render_template('mes_emprunts.html', emprunts=emprunts)
+    return render_template("mes_emprunts.html", emprunts=emprunts)
 
 
-@app.route('/retour_emprunt/<int:id>')
+@app.route("/retour_emprunt/<int:id>")
 @login_required
 @role_required(is_SuperUser_required=False)
 def retour_emprunt(id):
@@ -366,20 +396,22 @@ def retour_emprunt(id):
         livre_emprunte = emprunt.livre
         livre_emprunte.quantite += 1
         db.session.commit()
-        flash('Livre retourné avec succès.', 'success')
+        flash("Livre retourné avec succès.", "success")
     else:
-        flash('Emprunt introuvable.', 'error')
-    return redirect(url_for('mes_emprunts'))
-    
-    
-@app.route('/voir_emprunts/<int:id>')
+        flash("Emprunt introuvable.", "error")
+    return redirect(url_for("mes_emprunts"))
+
+
+@app.route("/voir_emprunts/<int:id>")
 @login_required
 @role_required(is_SuperUser_required=True)
 def voir_emprunts(id):
     utilisateur = Utilisateur.query.get(id)
     emprunts = Emprunt.query.filter_by(utilisateur_id=id).all()
-    return render_template('voir_emprunts.html', utilisateur=utilisateur, emprunts=emprunts)
+    return render_template(
+        "voir_emprunts.html", utilisateur=utilisateur, emprunts=emprunts
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
