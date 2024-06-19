@@ -1,56 +1,64 @@
-{% extends 'layout_admin.html' %}
-
-{% block title %}Accueil - Bibliothèque Admin{% endblock %}
-
-{% block content %}
+{% extends 'layout_admin.html' %} {% block title %}Accueil - Bibliothèque
+Admin{% endblock %} {% block content %}
 <div class="row">
-    <nav class="col-md-2 d-none d-md-block bg-danger sidebar">
-        <div class="sidebar-sticky">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">
-                        Tableau de bord Admin <span class="sr-only">({{ current_user.nom_utilisateur }})</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('gerer_livres')}}">
-                        Livres
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('gererUtilisateurs') }}">
-                        Utilisateurs
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('ajout_livre') }}">
-                        Ajouter un Livre
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-        <h1 class="mt-4">Tableau de bord Admin</h1>
-        <p>Bienvenue sur votre tableau de bord, "{{ current_user.nom_utilisateur }}".</p>
-        <div class="row">
-            <div class="col-md-6">
-                <a href="{{url_for('gerer_livres')}}" class="card bg-primary text-white mb-4 zoom-effect">
-                    <div class="card-body">
-                        <h5 class="card-title">Gérer les Livres</h5>
-                        <p class="card-text">Accédez à la gestion des livres de votre bibliothèque.</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6">
-                <a href="{{ url_for('gererUtilisateurs') }}" class="card bg-success text-white mb-4 zoom-effect">
-                    <div class="card-body">
-                        <h5 class="card-title">Gérer les Utilisateurs</h5>
-                        <p class="card-text">Voir et gérer les utilisateurs de l'application.</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </main>
+  <nav class="col-md-2 d-none d-md-block bg-danger sidebar">
+    <div class="sidebar-sticky">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">
+            Tableau de bord Admin
+            <span class="sr-only">({{ current_user.nom_utilisateur }})</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('gerer_livres')}}"> Livres </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('gererUtilisateurs') }}">
+            Utilisateurs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('ajout_livre') }}">
+            Ajouter un Livre
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <h1 class="mt-4">Tableau de bord Admin</h1>
+    <p>
+      Bienvenue sur votre tableau de bord, "{{ current_user.nom_utilisateur }}".
+    </p>
+    <div class="row">
+      <div class="col-md-6">
+        <a
+          href="{{url_for('gerer_livres')}}"
+          class="card bg-primary text-white mb-4 zoom-effect"
+        >
+          <div class="card-body">
+            <h5 class="card-title">Gérer les Livres</h5>
+            <p class="card-text">
+              Accédez à la gestion des livres de votre bibliothèque.
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a
+          href="{{ url_for('gererUtilisateurs') }}"
+          class="card bg-success text-white mb-4 zoom-effect"
+        >
+          <div class="card-body">
+            <h5 class="card-title">Gérer les Utilisateurs</h5>
+            <p class="card-text">
+              Voir et gérer les utilisateurs de l'application.
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
 </div>
 {% endblock %}

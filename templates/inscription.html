@@ -1,51 +1,79 @@
-{% extends 'layout.html' %}
-
-{% block content %}
+{% extends 'layout.html' %} {% block content %}
 <div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white text-center">
-                    <h1>Inscription</h1>
-                </div>
-                <div class="card-body">
-                    {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    <div class="alert alert-danger">{{ messages[-1] }}</div>
-                    {% endif %}
-                    {% endwith %}
-                    
-                    <form method="post">
-                        <div class="form-group">
-                            <label for="nom_utilisateur">Nom d'utilisateur :</label>
-                            <input type="text" id="nom_utilisateur" name="nom_utilisateur" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email :</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="adresse">Adresse :</label>
-                            <input type="text" id="adresse" name="adresse" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="mot_de_passe">Mot de passe :</label>
-                            <div class="input-group">
-                                <input type="password" id="mot_de_passe" name="mot_de_passe" class="form-control" required>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">Afficher</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary">S'inscrire</button>
-                            <a href="{{url_for('connexion')}}" class="btn btn-secondary">deja inscrit ?</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-primary text-white text-center">
+          <h1>Inscription</h1>
         </div>
+        <div class="card-body">
+          {% with messages = get_flashed_messages() %} {% if messages %}
+          <div class="alert alert-danger">{{ messages[-1] }}</div>
+          {% endif %} {% endwith %}
+
+          <form method="post">
+            <div class="form-group">
+              <label for="nom_utilisateur">Nom d'utilisateur :</label>
+              <input
+                type="text"
+                id="nom_utilisateur"
+                name="nom_utilisateur"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">Email :</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="adresse">Adresse :</label>
+              <input
+                type="text"
+                id="adresse"
+                name="adresse"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="mot_de_passe">Mot de passe :</label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="mot_de_passe"
+                  name="mot_de_passe"
+                  class="form-control"
+                  required
+                />
+                <div class="input-group-append">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="togglePassword"
+                  >
+                    Afficher
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button type="submit" class="btn btn-primary">S'inscrire</button>
+              <a href="{{url_for('connexion')}}" class="btn btn-secondary"
+                >deja inscrit ?</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 {% endblock %}

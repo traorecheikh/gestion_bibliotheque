@@ -1,37 +1,78 @@
-{% extends 'layout_admin.html' %}
-
-{% block title %}Modifier le Livre{% endblock %}
-
-{% block content %}
+{% extends 'layout_admin.html' %} {% block title %}Modifier le Livre{% endblock
+%} {% block content %}
 <div class="container">
-    <h1 class="mt-4">Modifier le Livre</h1>
-    <form method="post" action="{{ url_for('modifier_livre', id=livre.id) }}">
-        <div class="form-group">
-            <label for="titre">Titre:</label>
-            <input type="text" id="titre" name="titre" class="form-control" value="{{ livre.titre }}" required>
-        </div>
-        <div class="form-group">
-            <label for="auteur">Auteur:</label>
-            <input type="text" id="auteur" name="auteur" class="form-control" value="{{ livre.auteur }}" required>
-        </div>
-        <div class="form-group">
-            <label for="genre">Genre:</label>
-            <input type="text" id="genre" name="genre" class="form-control" value="{{ livre.genre }}" required>
-        </div>
-        <div class="form-group">
-            <label for="annee_publication">Année de publication:</label>
-            <input type="number" id="annee_publication" name="annee_publication" class="form-control" value="{{ livre.annee_publication }}" required>
-        </div>
-        <div class="form-group">
-            <label for="quantite">Quantité:</label>
-            <input type="number" id="quantite" name="quantite" class="form-control" value="{{ livre.quantite }}" required>
-        </div>
-        <div class="form-group">
-            <label for="image_url">URL de l'image:</label>
-            <input type="text" id="image_url" name="image_url" class="form-control" value="{{ livre.image_url }}" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-        <a href="{{ url_for('gerer_livres') }}" class="btn btn-danger">Annuler</a>
-    </form>
+  <h1 class="mt-4">Modifier le Livre</h1>
+  <form method="post" action="{{ url_for('modifier_livre', id=livre.id) }}">
+    <div class="form-group">
+      <label for="titre">Titre:</label>
+      <input
+        type="text"
+        id="titre"
+        name="titre"
+        class="form-control"
+        value="{{ livre.titre }}"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="auteur">Auteur:</label>
+      <input
+        type="text"
+        id="auteur"
+        name="auteur"
+        class="form-control"
+        value="{{ livre.auteur }}"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="genre">Genre:</label>
+      <input
+        type="text"
+        id="genre"
+        name="genre"
+        class="form-control"
+        value="{{ livre.genre }}"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="annee_publication">Année de publication:</label>
+      <input
+        type="number"
+        id="annee_publication"
+        name="annee_publication"
+        class="form-control"
+        value="{{ livre.annee_publication }}"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="quantite">Quantité:</label>
+      <input
+        type="number"
+        id="quantite"
+        name="quantite"
+        class="form-control"
+        value="{{ livre.quantite }}"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="image_url">URL de l'image:</label>
+      <input
+        type="text"
+        id="image_url"
+        name="image_url"
+        class="form-control"
+        value="{{ livre.image_url }}"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">
+      Enregistrer les modifications
+    </button>
+    <a href="{{ url_for('gerer_livres') }}" class="btn btn-danger">Annuler</a>
+  </form>
 </div>
 {% endblock %}
