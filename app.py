@@ -229,7 +229,7 @@ def bibliotheque():
 
     emprunts_ids = [
         emprunt.livre_id
-        for emprunt in Emprunt.query.filter_by(utilisateur_id=current_user.id)
+        for emprunt in Emprunt.query.filter_by(utilisateur_id=current_user.id, date_retour=None).all()
     ]
 
     return render_template(
