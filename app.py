@@ -69,6 +69,9 @@ def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
 
 
+# un decorateur pour verifier le rôle de l'utilisateur comme cela 
+# je configure que une seule fois le code et fait appel directement
+# au lieu de verifier chaque fonction avec le meme code
 def role_required(is_SuperUser_required):
     def decorator(f):
         @wraps(f)
@@ -94,6 +97,7 @@ def index():
         return redirect(url_for("connexion"))
 
 
+#avec le decorateur appeler seul les admin pourront joindre cette page
 @app.route("/gererUtilisateurs")
 @login_required
 @role_required(is_SuperUser_required=True)
@@ -229,7 +233,9 @@ def bibliotheque():
 
     emprunts_ids = [
         emprunt.livre_id
-        for emprunt in Emprunt.query.filter_by(utilisateur_id=current_user.id, date_retour=None).all()
+        for emprunt in Emprunt.query.filter_by(
+            utilisateur_id=current_user.id, date_retour=None
+        ).all()
     ]
 
     return render_template(
