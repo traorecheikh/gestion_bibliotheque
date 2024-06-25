@@ -15,13 +15,14 @@ from datetime import datetime, timedelta
 from functools import wraps
 import os
 
-
+#une route c'est une url vers une fonction à exectuer
 app = Flask(__name__)
 app.config.from_object("config.Config")
 app.config["SECRET_KEY"] = os.environ.get("SQLALCHEMY_SECRET_KEY")
 app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static/IMAGE")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+#pour fixer la page de connexion à notre route connexion
 login_manager = LoginManager(app)
 login_manager.login_view = "connexion"
 
@@ -63,7 +64,7 @@ class Emprunt(db.Model):
     duree_emprunt = db.Column(db.Integer, nullable=False)
     date_retour = db.Column(db.DateTime)
 
-
+#sauvegardéles information de l'utilisateur actuelle connectée
 @login_manager.user_loader
 def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
@@ -99,9 +100,12 @@ def index():
 
 # avec le decorateur appeler seul les admin pourront joindre cette page
 @app.route("/gererUtilisateurs")
+#permet de vérifier si l'utilisateur est connecter
 @login_required
+#permet de vérifier si l'utilisateur est un admin
 @role_required(is_SuperUser_required=True)
 def gererUtilisateurs():
+    #recupere tout les utilisateurs dans une variable qui sera utiliser dans gerer_utilisateur.html
     utilisateurs = Utilisateur.query.all()
     return render_template("gerer_utilisateur.html", utilisateurs=utilisateurs)
 
@@ -131,9 +135,10 @@ def connexion():
         mot_de_passe = request.form["mot_de_passe"]
         utilisateur = Utilisateur.query.filter_by(
             nom_utilisateur=nom_utilisateur
-        ).first()
+        ).first() #recupere le premier utilisateur que la requete retourne
         if utilisateur:
             if check_password_hash(utilisateur.mot_de_passe, mot_de_passe):
+               #authentifier l'utilisateur
                 login_user(utilisateur)
                 flash("Connecté avec succès.", "success")
                 if utilisateur.is_SuperUser:
@@ -254,7 +259,9 @@ def ajout_livre():
 
             image = request.files["image"]
             if image:
+                #enregistré une version securisée du fichier de limage
                 filename = secure_filename(image.filename)
+                
                 image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 image.save(image_path)
                 image_url = url_for("static", filename="IMAGE/" + filename)
@@ -382,7 +389,8 @@ def mes_emprunts():
     emprunts = Emprunt.query.filter_by(utilisateur_id=current_user.id).all()
     for emprunt in emprunts:
         if emprunt.date_retour is None:
-            if datetime.now() > emprunt.date_emprunt + timedelta(days=5):
+            #si la date actuelle est superieur a la date emprunt + 15j alors mettre emprunt en retard
+            if datetime.now() > emprunt.date_emprunt + timedelta(days=15):
                 emprunt.status = "en retard"
             else:
                 emprunt.status = "en cours"
