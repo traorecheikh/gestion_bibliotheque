@@ -69,7 +69,7 @@ def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
 
 
-# un decorateur pour verifier le rôle de l'utilisateur comme cela 
+# un decorateur pour verifier le rôle de l'utilisateur comme cela
 # je configure que une seule fois le code et fait appel directement
 # au lieu de verifier chaque fonction avec le meme code
 def role_required(is_SuperUser_required):
@@ -97,24 +97,19 @@ def index():
         return redirect(url_for("connexion"))
 
 
-#avec le decorateur appeler seul les admin pourront joindre cette page
+# avec le decorateur appeler seul les admin pourront joindre cette page
 @app.route("/gererUtilisateurs")
 @login_required
 @role_required(is_SuperUser_required=True)
 def gererUtilisateurs():
-    if current_user.is_SuperUser:
-        utilisateurs = Utilisateur.query.all()
-        return render_template("gerer_utilisateur.html", utilisateurs=utilisateurs)
-    else:
-        return redirect(url_for("accueil"))
+    utilisateurs = Utilisateur.query.all()
+    return render_template("gerer_utilisateur.html", utilisateurs=utilisateurs)
 
 
 @app.route("/supprimerUtilisateur/<int:id>", methods=["POST"])
 @login_required
 @role_required(is_SuperUser_required=True)
 def supprimerUtilisateur(id):
-    if not current_user.is_SuperUser:
-        return redirect(url_for("accueil"))
 
     utilisateur = Utilisateur.query.get(id)
     if utilisateur:
@@ -304,8 +299,6 @@ def details_livre(id):
 @login_required
 @role_required(is_SuperUser_required=True)
 def gerer_livres():
-    if not current_user.is_SuperUser:
-        return redirect(url_for("accueil"))
 
     search = request.args.get("search")
     if search:
