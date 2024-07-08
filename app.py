@@ -17,6 +17,7 @@ import os
 
 #une route c'est une url vers une fonction à exectuer
 app = Flask(__name__)
+
 app.config.from_object("config.Config")
 app.config["SECRET_KEY"] = os.environ.get("SQLALCHEMY_SECRET_KEY")
 app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static/IMAGE")
@@ -98,10 +99,10 @@ def index():
         return redirect(url_for("connexion"))
 
 
-# avec le decorateur appeler seul les admin pourront joindre cette page
 @app.route("/gererUtilisateurs")
 #permet de vérifier si l'utilisateur est connecter
 @login_required
+#avec le decorateur appeler seul les admin pourront joindre cette page
 #permet de vérifier si l'utilisateur est un admin
 @role_required(is_SuperUser_required=True)
 def gererUtilisateurs():
