@@ -65,7 +65,7 @@ class Emprunt(db.Model):
     duree_emprunt = db.Column(db.Integer, nullable=False)
     date_retour = db.Column(db.DateTime)
 
-#sauvegardéles information de l'utilisateur actuelle connectée
+#sauvegarde les information de l'utilisateur actuelle connectée
 @login_manager.user_loader
 def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
@@ -80,8 +80,12 @@ def role_required(is_SuperUser_required):
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
                 return redirect(url_for("connexion"))
+            #on verifie si l'utilisateur connecter n'est pas un admin et que 
+            #et que les privileges admin sont requis on le ramene a la page d'accueil
             if is_SuperUser_required and not current_user.is_SuperUser:
                 return redirect(url_for("accueil"))
+            #on verifie si l'utilisateur connecter est un admin et que 
+            #et que les privileges admin sont pas requis on le ramene a la page admin
             if not is_SuperUser_required and current_user.is_SuperUser:
                 return redirect(url_for("accueil_admin"))
             return f(*args, **kwargs)
