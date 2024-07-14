@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 import os
 
-#une route c'est une url vers une fonction à exectuer
+# une route c'est une url vers une fonction à exectuer
 app = Flask(__name__)
 
 app.config.from_object("config.Config")
@@ -23,7 +23,6 @@ app.config["SECRET_KEY"] = os.environ.get("SQLALCHEMY_SECRET_KEY")
 app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static/IMAGE")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-#pour fixer la page de connexion à notre route connexion
 login_manager = LoginManager(app)
 login_manager.login_view = "connexion"
 
@@ -65,7 +64,7 @@ class Emprunt(db.Model):
     duree_emprunt = db.Column(db.Integer, nullable=False)
     date_retour = db.Column(db.DateTime)
 
-#sauvegarde les information de l'utilisateur actuelle connectée
+
 @login_manager.user_loader
 def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
@@ -78,14 +77,12 @@ def role_required(is_SuperUser_required):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if not current_user.is_authenticated:
-                return redirect(url_for("connexion"))
-            #on verifie si l'utilisateur connecter n'est pas un admin et que 
-            #et que les privileges admin sont requis on le ramene a la page d'accueil
+            # on verifie si l'utilisateur connecter n'est pas un admin et que
+            # et que les privileges admin sont requis on le ramene a la page d'accueil
             if is_SuperUser_required and not current_user.is_SuperUser:
                 return redirect(url_for("accueil"))
-            #on verifie si l'utilisateur connecter est un admin et que 
-            #et que les privileges admin sont pas requis on le ramene a la page admin
+            # on verifie si l'utilisateur connecter est un admin et que
+            # et que les privileges admin sont pas requis on le ramene a la page admin
             if not is_SuperUser_required and current_user.is_SuperUser:
                 return redirect(url_for("accueil_admin"))
             return f(*args, **kwargs)
@@ -104,13 +101,13 @@ def index():
 
 
 @app.route("/gererUtilisateurs")
-#permet de vérifier si l'utilisateur est connecter
+# permet de vérifier si l'utilisateur est connecter
 @login_required
-#avec le decorateur appeler seul les admin pourront joindre cette page
-#permet de vérifier si l'utilisateur est un admin
+# avec le decorateur appeler seul les admin pourront joindre cette page
+# permet de vérifier si l'utilisateur est un admin
 @role_required(is_SuperUser_required=True)
 def gererUtilisateurs():
-    #recupere tout les utilisateurs dans une variable qui sera utiliser dans gerer_utilisateur.html
+    # recupere tout les utilisateurs dans une variable qui sera utiliser dans gerer_utilisateur.html
     utilisateurs = Utilisateur.query.all()
     return render_template("gerer_utilisateur.html", utilisateurs=utilisateurs)
 
@@ -140,10 +137,10 @@ def connexion():
         mot_de_passe = request.form["mot_de_passe"]
         utilisateur = Utilisateur.query.filter_by(
             nom_utilisateur=nom_utilisateur
-        ).first() #recupere le premier utilisateur que la requete retourne
+        ).first()  # recupere le premier utilisateur que la requete retourne
         if utilisateur:
             if check_password_hash(utilisateur.mot_de_passe, mot_de_passe):
-               #authentifier l'utilisateur
+                # authentifier l'utilisateur
                 login_user(utilisateur)
                 flash("Connecté avec succès.", "success")
                 if utilisateur.is_SuperUser:
@@ -223,8 +220,6 @@ def accueil_admin():
 
 
 @app.route("/bibliotheque")
-@login_required
-@role_required(is_SuperUser_required=False)
 def bibliotheque():
     search = request.args.get("search")
     if search:
@@ -236,12 +231,14 @@ def bibliotheque():
     else:
         livres = Livre.query.all()
 
-    emprunts_ids = [
-        emprunt.livre_id
-        for emprunt in Emprunt.query.filter_by(
-            utilisateur_id=current_user.id, date_retour=None
-        ).all()
-    ]
+    emprunts_ids = []
+    if current_user.is_authenticated:
+        emprunts_ids = [
+            emprunt.livre_id
+            for emprunt in Emprunt.query.filter_by(
+                utilisateur_id=current_user.id, date_retour=None
+            ).all()
+        ]
 
     return render_template(
         "bibliotheque.html", livres=livres, emprunts_ids=emprunts_ids
@@ -264,9 +261,9 @@ def ajout_livre():
 
             image = request.files["image"]
             if image:
-                #enregistré une version securisée du fichier de limage
+                # enregistré une version securisée du fichier de limage
                 filename = secure_filename(image.filename)
-                
+
                 image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 image.save(image_path)
                 image_url = url_for("static", filename="IMAGE/" + filename)
@@ -296,8 +293,6 @@ def ajout_livre():
 
 
 @app.route("/details_livre/<int:id>")
-@login_required
-@role_required(is_SuperUser_required=False)
 def details_livre(id):
     livre = Livre.query.get(id)
     if not livre:
@@ -394,7 +389,7 @@ def mes_emprunts():
     emprunts = Emprunt.query.filter_by(utilisateur_id=current_user.id).all()
     for emprunt in emprunts:
         if emprunt.date_retour is None:
-            #si la date actuelle est superieur a la date emprunt + 15j alors mettre emprunt en retard
+            # si la date actuelle est superieur a la date emprunt + 15j alors mettre emprunt en retard
             if datetime.now() > emprunt.date_emprunt + timedelta(days=15):
                 emprunt.status = "en retard"
             else:

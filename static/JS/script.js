@@ -10,3 +10,7 @@ document
       this.textContent = "Afficher";
     }
   });
+  $(document).ready(function() {
+    $('#loginBanner').carousel();
+  });
+  
